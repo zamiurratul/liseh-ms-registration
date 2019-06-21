@@ -1,9 +1,9 @@
-/*
 package com.liseh;
 
-import com.liseh.GenericKafkaObject;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -11,13 +11,14 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
-import org.springframework.kafka.core.ConsumerFactory;
-import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
-import org.springframework.kafka.core.ProducerFactory;
+import org.springframework.kafka.config.KafkaListenerContainerFactory;
+import org.springframework.kafka.core.*;
+import org.springframework.kafka.listener.ConcurrentMessageListenerContainer;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.KafkaMessageListenerContainer;
 import org.springframework.kafka.requestreply.ReplyingKafkaTemplate;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
+import org.springframework.kafka.support.serializer.JsonSerializer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -38,21 +39,23 @@ public class KafkaConsumerConfiguration {
     @Autowired
     private ProducerFactory<String, GenericKafkaObject> producerFactory;
 
-    @Bean
-    public ConsumerFactory<String, GenericKafkaObject> consumerFactory() {
+    private Map<String, Object> consumerConfigs(){
         Map<String, Object> configs = new HashMap<>();
         configs.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, bootStrapServers);
         configs.put(ConsumerConfig.GROUP_ID_CONFIG, consumerGroup);
-        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
-        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
-        return new DefaultKafkaConsumerFactory<>(configs);
+//        configs.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
+//        configs.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, JsonDeserializer.class);
+        return configs;
+    }
+
+    @Bean
+    public ConsumerFactory<String, GenericKafkaObject> consumerFactory() {
+        return new DefaultKafkaConsumerFactory<>(consumerConfigs(), new StringDeserializer(), new JsonDeserializer<>(GenericKafkaObject.class));
     }
 
     @Bean
     public KafkaMessageListenerContainer<String, GenericKafkaObject> replyContainer(ConsumerFactory<String, GenericKafkaObject> consumerFactory){
-        String[] topics = new String[1];
-        topics[0] = replyTopic;
-        ContainerProperties containerProperties = new ContainerProperties(topics);
+        ContainerProperties containerProperties = new ContainerProperties(replyTopic);
         return new KafkaMessageListenerContainer<>(consumerFactory, containerProperties);
     }
 
@@ -64,8 +67,8 @@ public class KafkaConsumerConfiguration {
     @Bean
     public ConcurrentKafkaListenerContainerFactory<String, GenericKafkaObject> kafkaListenerContainerFactory() {
         ConcurrentKafkaListenerContainerFactory<String, GenericKafkaObject> containerFactory = new ConcurrentKafkaListenerContainerFactory<>();
+        containerFactory.setConsumerFactory(consumerFactory());
         containerFactory.setReplyTemplate(kafkaReplyTemplate(producerFactory, replyContainer(consumerFactory())));
         return containerFactory;
     }
 }
-*/
