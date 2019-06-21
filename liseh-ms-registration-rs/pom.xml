@@ -4,12 +4,20 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>liseh-ms-registration</artifactId>
-        <groupId>com.liseh.ms.registration</groupId>
+        <groupId>com.liseh</groupId>
         <version>1.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>liseh-ms-registration-rs</artifactId>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.liseh</groupId>
+            <artifactId>liseh-ms-registration-api</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+    </dependencies>
 
 
 </project>
