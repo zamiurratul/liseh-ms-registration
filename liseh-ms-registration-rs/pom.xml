@@ -17,6 +17,16 @@
             <artifactId>liseh-ms-registration-api</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>com.liseh</groupId>
+            <artifactId>liseh-ms-registration-service</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>com.liseh</groupId>
+            <artifactId>liseh-ms-registration-service-impl</artifactId>
+            <version>1.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
 
